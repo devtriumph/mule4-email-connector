@@ -1,0 +1,19 @@
+app:
+  name: "mule4-emil-connector"
+
+http:
+  host: "0.0.0.0"
+  port: "8081"
+  
+productsAPI:
+  host: "devtriumph.mocklab.io"
+  port: "443"
+  path: "products"
+  
+email:
+  host: "changeme"
+  port: "587"
+  username: "changeme"
+  password: "changeme"
+  sender: "changeme"
+  reciever: "changeme"

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <flow name="mule4-email-connector-flow" doc:id="02c2f3f6-fc05-4811-b503-dcb5eba745bd" >
+        <http:listener doc:name="GET:/Products" doc:id="df44c9a7-c5fe-4c54-8953-351382fdbdb3" config-ref="HTTP_Listener_config" path="/products"/>
+        <logger level="INFO" doc:name="Flow Start" doc:id="f3dc356a-008a-4440-a41a-b068cd789446" message='#["Flow Start"]'/>
+        <http:request method="GET" doc:name="Products API" doc:id="b5ee918e-22e9-4df1-a89b-f7cd99fbe875" config-ref="HTTP_Products_API" path="/products"/>
+        <logger level="INFO" doc:name="Flow End" doc:id="558ef3a5-9954-450c-aecf-deb563bf562c" message='#["Flow Ended"]' />
+        <error-handler >
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="79281243-943e-490c-b945-3dc6a095ccde" >
+                <logger level="INFO" doc:name="Log Error" doc:id="c88819d4-d624-4f00-a609-59ba346fcad5" message="#[error.errorMessage]"/>
+                <ee:transform doc:name="Set Error Message" doc:id="e6d1615d-5a2c-4a64-b829-05c63ae775c0" >
+                    <ee:message >
+                        <ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+{
+	"statusCode" : 500,
+	"errorMessage": error.detailedDescription
+}]]></ee:set-payload>
+                    </ee:message>
+                </ee:transform>
+                <email:send doc:name="Send an Error Mail" doc:id="9a468f4e-30bf-45b7-b5d7-4393bff2be02" config-ref="Email_SMTP" fromAddress="${email.sender}" subject="Error occurred in application - ${app.name}">
+                    <email:to-addresses >
+                        <email:to-address value="${email.reciever}" />
+                    </email:to-addresses>
+                    <email:body contentType="text/html" >
+                        <email:content ><![CDATA[#["Attached error message"]]]></email:content>
+                    </email:body>
+                    <email:attachments ><![CDATA[#[{
+	"errorMessage.json": payload
+}]]]></email:attachments>
+                </email:send>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+</mule>

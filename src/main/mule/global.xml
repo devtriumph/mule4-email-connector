@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="6cdb42d6-dfde-43ae-b72a-20f0c2271d1c" >
+        <email:smtp-connection host="${email.host}" port="${email.port}" user="${email.username}" password="${email.password}" />
+    </email:smtp-config>
+    <http:request-config name="HTTP_Products_API" doc:name="HTTP Request configuration" doc:id="6434b2c4-3b39-4d50-a282-fb0d5226f8c1" >
+        <http:request-connection protocol="HTTPS" host="${productsAPI.host}" port="${productsAPI.port}" />
+    </http:request-config>
+    <configuration-properties doc:name="Configuration properties" doc:id="8ade83d2-e06b-4884-b5c6-fd4a584b3fc6" file="devtriumph-dev.yaml" />
+    <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9998cf86-4fed-4e3a-9c2d-971aa70d5bd1" >
+        <http:listener-connection host="${http.host}" port="${http.port}" />
+    </http:listener-config>
+</mule>
